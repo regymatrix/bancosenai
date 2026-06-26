@@ -1,66 +1,49 @@
 ﻿using System;
 using System.IO;
-        
-string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-string filePath = Path.Combine(desktopPath, "Token", "TokenClientes.txt");
+Console.WriteLine("--- SISTEMA BANCÁRIO - VALIDAÇÃO INICIAL (V1) ---");
+string localDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+string caminhoArquivo = Path.Combine(localDesktop, "Token", "TokenClientes.txt");
+bool continuar = true;
+int qtdTentativa = 0;
 
-string[] logCpf = new string[3];
-string[] logDataHora = new string[3];
-int logContador = 0;
-
-bool rodando = true;
-
-while (rodando)
+if (File.Exists(caminhoArquivo))
 {
-    if (logContador >= 3)
+    while (continuar & qtdTentativa<=2)    {
+        Console.Write("Digite o número da conta: ");
+        string conta = Console.ReadLine();
+        Console.Write("Digite a agência: ");
+        string agencia = Console.ReadLine();
+        Console.Write("Digite o seu CPF (somente números): ");
+        string cpfDigitado = Console.ReadLine();
+        string conteudoArquivo = File.ReadAllText(caminhoArquivo);
+        string buscaExata = cpfDigitado + ";";
+        if (conteudoArquivo.Contains(buscaExata))
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\n[SUCESSO] Credenciais confirmadas com sucesso.");
+            Console.ResetColor();
+            continuar = false; //sair da aplicação
+            break;
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n[ERRO] Credenciais inválidas!");            
+            Console.ResetColor();
+            qtdTentativa++;
+        }
+
+    }
+
+    if (qtdTentativa > 2)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("\n[FALHA] Usuário bloqueado!");
+        Console.WriteLine("\n[ERRO] Tentou várias vezes!");
         Console.ResetColor();
-        rodando = false;
-
     }
-    Console.Clear();
-    Console.WriteLine("--- SISTEMA BANCÁRIO (AUTENTICAÇÃO) ---");
-    Console.Write("Digite a agência: ");
-    string agencia = Console.ReadLine();
-    Console.Write("Digite a conta: ");
-    string conta = Console.ReadLine();
-    Console.Write("Digite o CPF (apenas números): ");
-    string cpf = Console.ReadLine();
-
-    if (logContador < 3)
-    {
-        logCpf[logContador] = cpf;
-        logDataHora[logContador] = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-        logContador++;
-    } 
-
-    string conteudoArquivo = File.ReadAllText(filePath);
-
-    if (!conteudoArquivo.Contains(cpf))
-    {
-        Console.WriteLine("\n[RESULTADO] Credenciais inválidas!");
-        continue;
-    }
-    else if (conteudoArquivo.Contains(cpf))
-    {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("\n[SUCESSO] Usuário autenticado com sucesso!");
-        Console.ResetColor();
-        rodando = false;
-    }
-    Console.WriteLine("\nPressione qualquer tecla para prosseguir...");
-    Console.ReadKey();
 }
-Console.WriteLine("");
-Console.WriteLine("Tentativa | CPF         | Data Hora");
-
-for (int i = 0; i < logContador; i++)
+else
 {
-    string numeroTentativa = (i + 1).ToString("D2");
-    Console.WriteLine($"{numeroTentativa}        | {logCpf[i]} | {logDataHora[i]}");
+    Console.WriteLine($"\n[ERRO] O arquivo 'TokenClientes.txt' não foi encontrado em: {caminhoArquivo}");
 }
-
-Console.WriteLine("\nAplicação encerrada. Pressione qualquer tecla para sair.");
-Console.ReadKey();
+Console.WriteLine("\n------------------------------------------------");
