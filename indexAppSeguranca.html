@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Bancário - Validação Inicial (V1)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1a365d;
+            margin-bottom: 5px;
+            font-size: 1.4rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3182ce;
+        }
+
+        input:disabled {
+            background-color: #edf2f7;
+            cursor: not-allowed;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2b6cb0;
+        }
+
+        button:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .mensagem {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        .sucesso {
+            background-color: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #c6f6d5;
+            display: block;
+        }
+
+        .erro {
+            background-color: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fed7d7;
+            display: block;
+        }
+
+        .log-container {
+            margin-top: 25px;
+            border-top: 2px dashed #e2e8f0;
+            padding-top: 15px;
+        }
+
+        .log-title {
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .log-lista {
+            list-style: none;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #2d3748;
+            background: #edf2f7;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .log-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        /* Estilos da Tabela Simulada */
+        .tabela-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+        }
+
+        .tabela-titulo {
+            font-size: 0.85rem;
+            color: #4a5568;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>SISTEMA BANCÁRIO</h2>
+    <div class="subtitle">Validação Inicial (V1)</div>
+
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="conta">Número da Conta:</label>
+            <input type="text" id="conta" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="agencia">Agência:</label>
+            <input type="text" id="agencia" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="cpf">CPF (somente números):</label>
+            <input type="text" id="cpf" pattern="\d+" title="Digite apenas números" required autocomplete="off">
+        </div>
+
+        <button type="submit" id="btnEnviar">Confirmar Credenciais</button>
+    </form>
+
+    <div id="mensagemBox" class="mensagem"></div>
+
+    <div class="log-container">
+        <div class="log-title">--- Log de Tentativas (Vetor) ---</div>
+        <ul id="logLista" class="log-lista"></ul>
+    </div>
+</div>
+
+<div class="tabela-container">
+    <div class="tabela-titulo">Dados em memória para testes (Simulação)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Conta</th>
+                <th>Agência</th>
+                <th>CPF</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>12345-6</td>
+                <td>0001</td>
+                <td>11122233344</td>
+            </tr>
+            <tr>
+                <td>98765-4</td>
+                <td>0002</td>
+                <td>55566677788</td>
+            </tr>
+            <tr>
+                <td>54321-0</td>
+                <td>1010</td>
+                <td>99988877766</td>
+            </tr>
+            <tr>
+                <td>11111-1</td>
+                <td>2020</td>
+                <td>12345678901</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Lista de objetos simulando a base de dados em memória
+    const baseClientes = [
+        { conta: "12345-6", agencia: "0001", cpf: "11122233344" },
+        { conta: "98765-4", agencia: "0002", cpf: "55566677788" },
+        { conta: "54321-0", agencia: "1010", cpf: "99988877766" },
+        { conta: "11111-1", agencia: "2020", cpf: "12345678901" }
+    ];
+
+    let qtdTentativa = 0;
+    let logTentativas = new Array(3).fill(null);
+
+    // Mapeamento do DOM
+    const loginForm = document.getElementById("loginForm");
+    const mensagemBox = document.getElementById("mensagemBox");
+    const btnEnviar = document.getElementById("btnEnviar");
+    const contaInput = document.getElementById("conta");
+    const agenciaInput = document.getElementById("agencia");
+    const cpfInput = document.getElementById("cpf");
+    const logLista = document.getElementById("logLista");
+
+    loginForm.addEventListener("submit", function(event) {
+        event.preventDefault(); 
+
+        if (qtdTentativa > 2) return;
+
+        const contaDigitada = contaInput.value.trim();
+        const agenciaDigitada = agenciaInput.value.trim();
+        const cpfDigitado = cpfInput.value.trim();
+
+        // R7D - Salva no vetor ANTES de incrementar a quantidade de erros
+        const agora = new Date();
+        const dataHora = agora.toLocaleDateString("pt-BR") + " " + agora.toLocaleTimeString("pt-BR");
+        logTentativas[qtdTentativa] = `Tentativa: ${qtdTentativa + 1} | CPF: ${cpfDigitado} | Data/Hora: ${dataHora}`;
+
+        // Validação estrita: confere se bate Conta AND Agência AND CPF
+        const usuarioValido = baseClientes.find(cliente => 
+            cliente.conta === contaDigitada && 
+            cliente.agencia === agenciaDigitada && 
+            cliente.cpf === cpfDigitado
+        );
+
+        if (usuarioValido) {
+            mensagemBox.className = "mensagem sucesso";
+            mensagemBox.innerText = "[SUCESSO] Credenciais confirmadas com sucesso.";
+            btnEnviar.disabled = true;
+            travarCampos();
+        } else {
+            qtdTentativa++;
+            
+            if (qtdTentativa > 2) {
+                mensagemBox.className = "mensagem erro";
+                mensagemBox.innerText = "[ERRO] Tentou várias vezes! Conta Bloqueada.";
+                btnEnviar.disabled = true;
+                travarCampos();
+            } else {
+                mensagemBox.className = "mensagem erro";
+                mensagemBox.innerText = "[ERRO] Credenciais inválidas!";
+            }
+        }
+
+        atualizarInterfaceLog();
+    });
+
+    function travarCampos() {
+        contaInput.disabled = true;
+        agenciaInput.disabled = true;
+        cpfInput.disabled = true;
+    }
+
+    function atualizarInterfaceLog() {
+        logLista.innerHTML = ""; 
+
+        // Loop invertido igual ao C# (Length - 1 até 0)
+        for (let i = logTentativas.length - 1; i >= 0; i--) {
+            if (logTentativas[i] !== null) {
+                const li = document.createElement("li");
+                li.className = "log-item";
+                li.innerText = logTentativas[i];
+                logLista.appendChild(li);
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
