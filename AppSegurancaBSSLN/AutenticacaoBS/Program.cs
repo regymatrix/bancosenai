@@ -1,18 +1,15 @@
 ﻿using System;
 using System.IO;
 
-Console.WriteLine("--- SISTEMA BANCÁRIO - VALIDAÇÃO INICIAL (V1) ---");
+Console.WriteLine("--- SISTEMA BANCÁRIO - VALIDAÇÃO INICIAL (V3) ---");
 string localDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 string caminhoArquivo = Path.Combine(localDesktop, "Token", "TokenClientes.txt");
 bool continuar = true;
 int qtdTentativa = 0;
-
-// R7D - Criação do vetor para armazenar até 3 logs na memória
 string[] logTentativas = new string[3];
 
 if (File.Exists(caminhoArquivo))
 {
-    // Corrigido para && (operador lógico correto)
     while (continuar && qtdTentativa <= 2)
     {
         Console.Write("Digite o número da conta: ");
@@ -22,19 +19,62 @@ if (File.Exists(caminhoArquivo))
         Console.Write("Digite o seu CPF (somente números): ");
         string cpfDigitado = Console.ReadLine();
 
-        string conteudoArquivo = File.ReadAllText(caminhoArquivo);
-        string buscaExata = cpfDigitado + ";";
-
-        // R7D - Salva a tentativa atual no vetor ANTES de incrementar a quantidade
         string dataHora = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
         logTentativas[qtdTentativa] = $"Tentativa: {qtdTentativa + 1} | CPF: {cpfDigitado} | Data/Hora: {dataHora}";
 
-        if (conteudoArquivo.Contains(buscaExata))
+        string[] linhasArquivo = File.ReadAllLines(caminhoArquivo);
+        bool cpfEncontrado = false;
+        bool tokenValido = false;
+        bool tokenExpirado = false;
+        string tokenEsperado = $"bs_{cpfDigitado}";
+
+        foreach (string linha in linhasArquivo)
+        {
+            string[] dados = line: linha.Split(';');
+            if (dados.Length > 0 && dados[0] == cpfDigitado)
+            {
+                cpfEncontrado = true;
+
+                if (dados.Length > 1 && dados[1].Contains(tokenEsperado))
+                {
+                    tokenValido = true;
+
+                    if (dados.Length > 2 && DateTime.TryParse(dados[2], out DateTime dataToken))
+                    {
+                        if (DateTime.Now > dataToken)
+                        {
+                            tokenExpirado = true;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+
+        if (cpfEncontrado && tokenValido && !tokenExpirado)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\n[SUCESSO] Credenciais confirmadas com sucesso.");
+            Console.WriteLine("\n[SUCESSO] Credenciais e Token confirmados com sucesso.");
             Console.ResetColor();
             continuar = false;
+            break;
+        }
+        else if (cpfEncontrado && tokenValido && tokenExpirado)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n[ERRO] Credenciais inválidas! Conta Bloqueada.");
+            Console.ResetColor();
+            continuar = false;
+            qtdTentativa = 3;
+            break;
+        }
+        else if (cpfEncontrado && !tokenValido)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n[ERRO] Token inválido! Conta Bloqueada.");
+            Console.ResetColor();
+            continuar = false;
+            qtdTentativa = 3;
             break;
         }
         else
@@ -53,11 +93,9 @@ if (File.Exists(caminhoArquivo))
         Console.ResetColor();
     }
 
-    // R7D - Exibição do Log guardado no Vetor ao finalizar a aplicação
     Console.WriteLine("\n--- LOG DE TENTATIVAS (EXIBIÇÃO VIA VETOR) ---");
     for (int i = 0; i < logTentativas.Length; i++)
     {
-        // Só exibe a posição do vetor se ela não estiver vazia
         if (!string.IsNullOrEmpty(logTentativas[i]))
         {
             Console.WriteLine(logTentativas[i]);
