@@ -1,0 +1,6 @@
+*.v2
+*.vsidx
+/DEVLOGICASLN/.vs/DEVLOGICASLN/v17
+/DEVLOGICASLN/BS_Consorcio/obj
+/DEVLOGICASLN/BS_SaldoNaConta/bin
+/DEVLOGICASLN/BS_SaldoNaConta/obj
